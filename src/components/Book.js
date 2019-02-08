@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 export default class Book extends Component {
   render() {
-    const { image } = this.props;
+    const { book } = this.props;
     return (
       <div className="book">
         <div className="book-top">
@@ -11,7 +11,7 @@ export default class Book extends Component {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: `url("${image}")`
+              backgroundImage: `url("${book.image}")`
             }}
           />
           <div className="book-shelf-changer">
