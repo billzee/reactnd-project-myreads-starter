@@ -1,8 +1,30 @@
 import React, { Component } from "react";
 
+import * as BooksAPI from "../BooksAPI";
+
 export default class Book extends Component {
+  renderAuthors = book => {
+    if (book.authors && book.authors.length > 0) {
+      return (
+        <div className="book-authors">
+          {book.authors.map((author, index) => (
+            <div key={index}>{author}</div>
+          ))}
+        </div>
+      );
+    }
+  };
+
+  updateBookShelf = (book, shelf) => {
+    console.log(book, shelf);
+    BooksAPI.update(book, shelf).then(res => {
+      this.props.onBookUpdate();
+    });
+  };
+
   render() {
     const { book } = this.props;
+
     return (
       <div className="book">
         <div className="book-top">
@@ -15,8 +37,8 @@ export default class Book extends Component {
             }}
           />
           <div className="book-shelf-changer">
-            <select>
-              <option value="move" disabled>
+            <select onChange={e => this.updateBookShelf(book, e.target.value)}>
+              <option defaultValue value="move" disabled>
                 Move to...
               </option>
               <option value="currentlyReading">Currently Reading</option>
@@ -26,8 +48,8 @@ export default class Book extends Component {
             </select>
           </div>
         </div>
-        <div className="book-title">To Kill a Mockingbird</div>
-        <div className="book-authors">Harper Lee</div>
+        <div className="book-title">{book.title}</div>
+        {this.renderAuthors(book)}
       </div>
     );
   }

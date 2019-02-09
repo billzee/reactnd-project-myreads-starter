@@ -5,23 +5,29 @@ import Book from "../../components/Book";
 import Bookshelf from "../../components/Bookshelf";
 import PageTitle from "../../components/PageTitle";
 
+import { withRouter } from "react-router";
+
 const bookshelves = [
   { id: "currentlyReading", title: "Currently Reading" },
   { id: "wantToRead", title: "Want to Read" },
   { id: "read", title: "Read" }
 ];
 
-export default class BooksPage extends Component {
+class BooksPage extends Component {
   state = {
     books: []
   };
 
   componentDidMount() {
-    BooksAPI.getAll().then(res => {
-      console.log(res);
-      this.setState({ books: res });
-    });
+    this.getAllBooks();
   }
+
+  getAllBooks = () => {
+    BooksAPI.getAll().then(data => {
+      console.log(data);
+      this.setState({ books: data });
+    });
+  };
 
   render() {
     return (
@@ -31,18 +37,23 @@ export default class BooksPage extends Component {
           {bookshelves.map(bookshelf => {
             return (
               <Bookshelf key={bookshelf.id} title={bookshelf.title}>
-                {this.state.books &&
-                  this.state.books
-                    .filter(book => book.shelf === bookshelf.id)
-                    .map(book => {
-                      return <Book book={book} />;
-                    })}
+                {this.state.books
+                  .filter(book => book.shelf === bookshelf.id)
+                  .map(book => {
+                    return (
+                      <Book
+                        onBookUpdate={this.getAllBooks}
+                        key={book.id}
+                        book={book}
+                      />
+                    );
+                  })}
               </Bookshelf>
             );
           })}
         </div>
         <div className="open-search">
-          <button onClick={() => this.setState({ showSearchPage: true })}>
+          <button onClick={() => this.props.history.push("/search")}>
             Add a book
           </button>
         </div>
@@ -50,3 +61,5 @@ export default class BooksPage extends Component {
     );
   }
 }
+
+export default withRouter(BooksPage);

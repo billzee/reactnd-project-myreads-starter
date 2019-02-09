@@ -8,8 +8,8 @@ export default function Bookshelf(props) {
       <div className="bookshelf-books">
         <ol className="books-grid">
           {children &&
-            children.map(item => {
-              return <li>{item}</li>;
+            children.map((item, index) => {
+              return <li key={index}>{item}</li>;
             })}
         </ol>
       </div>
