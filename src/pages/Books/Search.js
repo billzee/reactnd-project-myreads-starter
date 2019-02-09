@@ -50,13 +50,7 @@ export default class SearchBooksPage extends Component {
         <div className="search-books-results">
           <ol className="books-grid">
             {books.map(book => {
-              return (
-                <Book
-                  onBookUpdate={this.getAllBooks}
-                  key={book.id}
-                  book={book}
-                />
-              );
+              return <Book key={book.id} book={book} />;
             })}
           </ol>
         </div>

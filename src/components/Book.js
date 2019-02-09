@@ -3,6 +3,14 @@ import React, { Component } from "react";
 import * as BooksAPI from "../BooksAPI";
 
 export default class Book extends Component {
+  state = {
+    shelf: ""
+  };
+
+  componentDidMount() {
+    this.setState({ shelf: this.props.book.shelf });
+  }
+
   renderAuthors = book => {
     if (book.authors && book.authors.length > 0) {
       return (
@@ -16,9 +24,9 @@ export default class Book extends Component {
   };
 
   updateBookShelf = (book, shelf) => {
-    console.log(book, shelf);
+    const { onBookUpdate } = this.props;
     BooksAPI.update(book, shelf).then(res => {
-      this.props.onBookUpdate();
+      if (onBookUpdate) onBookUpdate();
     });
   };
 
@@ -37,8 +45,11 @@ export default class Book extends Component {
             }}
           />
           <div className="book-shelf-changer">
-            <select onChange={e => this.updateBookShelf(book, e.target.value)}>
-              <option defaultValue value="move" disabled>
+            <select
+              value={this.state.shelf}
+              onChange={e => this.updateBookShelf(book, e.target.value)}
+            >
+              <option value="move" disabled>
                 Move to...
               </option>
               <option value="currentlyReading">Currently Reading</option>
