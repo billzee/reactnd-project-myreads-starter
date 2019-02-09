@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import * as BooksAPI from "./BooksAPI";
+import * as BooksAPI from "../../BooksAPI";
 
-import Book from "./components/Book";
-import Bookshelf from "./components/Bookshelf";
-import PageTitle from "./components/PageTitle";
+import Book from "../../components/Book";
+import Bookshelf from "../../components/Bookshelf";
+import PageTitle from "../../components/PageTitle";
 
 const bookshelves = [
-  { id: "currentlyreading", title: "Currently Reading" },
+  { id: "currentlyReading", title: "Currently Reading" },
   { id: "wantToRead", title: "Want to Read" },
   { id: "read", title: "Read" }
 ];
@@ -19,7 +19,7 @@ export default class BooksPage extends Component {
   componentDidMount() {
     BooksAPI.getAll().then(res => {
       console.log(res);
-      this.setState({ books: res.data });
+      this.setState({ books: res });
     });
   }
 
@@ -30,12 +30,13 @@ export default class BooksPage extends Component {
         <div className="list-books-content">
           {bookshelves.map(bookshelf => {
             return (
-              <Bookshelf title={bookshelf.title}>
-                {this.state.books
-                  .filter(book => book.shelf === bookshelf.id)
-                  .map(book => {
-                    return <Book book={book} />;
-                  })}
+              <Bookshelf key={bookshelf.id} title={bookshelf.title}>
+                {this.state.books &&
+                  this.state.books
+                    .filter(book => book.shelf === bookshelf.id)
+                    .map(book => {
+                      return <Book book={book} />;
+                    })}
               </Bookshelf>
             );
           })}
