@@ -2,26 +2,45 @@ import React, { Component } from "react";
 import * as BooksAPI from "../../BooksAPI";
 import Book from "../../components/Book";
 
-export default class SearchBooksPage extends Component {
+import { withRouter } from "react-router";
+
+class SearchBooksPage extends Component {
   state = {
-    books: []
+    books: [],
+    query: ""
   };
 
   handleChange = query => {
-    if (query.length > 0) {
-      query = query.trim();
+    this.setState({ query }, () => {
+      if (query.length > 0) {
+        query = query.trim();
 
-      BooksAPI.search(query).then(res => {
-        console.log(res);
-        this.setState({ books: res });
-      });
+        BooksAPI.search(query).then(res => {
+          if (res && res.length > 0) {
+            this.setState({ books: res });
+          }
+        });
+      } else {
+        this.setState({ books: [] });
+      }
+    });
+  };
+
+  renderBooks = () => {
+    const { books, query } = this.state;
+
+    if (books && books.length > 0) {
+      return books.map(book => <Book key={book.id} book={book} />);
+    } else if (query.length === 0) {
+      return "Please, enter a search term";
     } else {
-      this.setState({ books: [] });
+      return "No books available for display";
     }
   };
 
   render() {
-    const { books } = this.state;
+    const { query } = this.state;
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -32,29 +51,20 @@ export default class SearchBooksPage extends Component {
             Close
           </button>
           <div className="search-books-input-wrapper">
-            {/*
-          NOTES: The search from BooksAPI is limited to a particular set of search terms.
-          You can find these search terms here:
-          https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-          However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-          you don't find a specific author or title. Every search is limited by search terms.
-        */}
             <input
-              onChange={e => this.handleChange(e.target.value)}
+              value={query}
               type="text"
               placeholder="Search by title or author"
+              onChange={e => this.handleChange(e.target.value)}
             />
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid">
-            {books.map(book => {
-              return <Book key={book.id} book={book} />;
-            })}
-          </ol>
+          <ol className="books-grid">{this.renderBooks()}</ol>
         </div>
       </div>
     );
   }
 }
+
+export default withRouter(SearchBooksPage);

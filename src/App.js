@@ -16,8 +16,8 @@ class BooksApp extends React.Component {
     return (
       <Router>
         <div className="app">
-          <Route exact path="/search" component={SearchBooksPage} />
           <Route exact path="/" component={BooksPage} />
+          <Route exact path="/search" component={SearchBooksPage} />
         </div>
       </Router>
     );

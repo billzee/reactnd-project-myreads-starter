@@ -24,7 +24,6 @@ class BooksPage extends Component {
 
   getAllBooks = () => {
     BooksAPI.getAll().then(data => {
-      console.log(data);
       this.setState({ books: data });
     });
   };
