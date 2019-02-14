@@ -7,34 +7,39 @@ import { withRouter } from "react-router";
 class SearchBooksPage extends Component {
   state = {
     books: [],
-    query: ""
+    query: "",
+    loading: false
+  };
+
+  searchBooks = async query => {
+    if (query.length > 0) {
+      query = query.trim();
+
+      this.setState({ loading: true }, async () => {
+        await BooksAPI.search(query).then(async books => {
+          this.setState({ books, loading: false });
+        });
+      });
+    } else {
+      this.setState({ books: [] });
+    }
   };
 
   handleChange = query => {
-    this.setState({ query }, () => {
-      if (query.length > 0) {
-        query = query.trim();
-
-        BooksAPI.search(query).then(res => {
-          if (res && res.length > 0) {
-            this.setState({ books: res });
-          }
-        });
-      } else {
-        this.setState({ books: [] });
-      }
-    });
+    this.setState({ query }, () => this.searchBooks(this.state.query));
   };
 
   renderBooks = () => {
-    const { books, query } = this.state;
+    const { books, query, loading } = this.state;
 
-    if (books && books.length > 0) {
+    if (loading) {
+      return `Searching "${query}" ...`;
+    } else if (books && books.length > 0) {
       return books.map(book => <Book key={book.id} book={book} />);
     } else if (query.length === 0) {
-      return "Please, enter a search term";
+      return "Please, enter a search term.";
     } else {
-      return "No books available for display";
+      return `No results for "${query}". Please try a different term.`;
     }
   };
 
