@@ -10,8 +10,15 @@ export default class Book extends Component {
   };
 
   componentDidMount() {
-    const { book } = this.props;
-    if (book.shelf) this.setState({ shelf: book.shelf });
+    let { book } = this.props;
+
+    if (!book.shelf) {
+      BooksAPI.get(book.id).then(userBook => {
+        this.setState({ shelf: userBook.shelf });
+      });
+    } else {
+      this.setState({ shelf: book.shelf });
+    }
   }
 
   renderAuthors = book => {

@@ -16,7 +16,7 @@ class SearchBooksPage extends Component {
       query = query.trim();
 
       this.setState({ loading: true }, async () => {
-        await BooksAPI.search(query).then(async books => {
+        await BooksAPI.search(query).then(books => {
           this.setState({ books, loading: false });
         });
       });

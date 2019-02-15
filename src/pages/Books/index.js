@@ -23,8 +23,8 @@ class BooksPage extends Component {
   }
 
   getAllBooks = () => {
-    BooksAPI.getAll().then(data => {
-      this.setState({ books: data });
+    BooksAPI.getAll().then(books => {
+      this.setState({ books });
     });
   };
 
