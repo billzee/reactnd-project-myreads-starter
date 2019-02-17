@@ -8,16 +8,55 @@ class SearchBooksPage extends Component {
   state = {
     books: [],
     query: "",
-    loading: false
+    loading: false,
+    userBooks: []
   };
 
-  searchBooks = async query => {
-    if (query.length > 0) {
+  componentDidMount() {
+    this.getUserBooks();
+  }
+
+  getUserBooks = () => {
+    BooksAPI.getAll().then(userBooks => {
+      this.setState({ userBooks });
+    });
+  };
+
+  handleChange = query => {
+    const { loading } = this.state;
+
+    this.setState({ query }, () => {
+      if (!loading) {
+        this.searchBooks(this.state.query);
+      } else {
+        setTimeout(() => {
+          this.searchBooks(this.state.query);
+        }, 1000);
+      }
+    });
+  };
+
+  sortBooks = books => {
+    const { userBooks } = this.state;
+    const sortedBooks = books.map(book => {
+      const bookInShelf = userBooks.find(
+        bookInShelf => bookInShelf.id === book.id
+      );
+
+      return bookInShelf || book;
+    });
+
+    return sortedBooks;
+  };
+
+  searchBooks = query => {
+    if (query && query.length > 0) {
       query = query.trim();
 
-      this.setState({ loading: true }, async () => {
-        await BooksAPI.search(query).then(books => {
-          this.setState({ books, loading: false });
+      this.setState({ loading: true }, () => {
+        BooksAPI.search(query).then(books => {
+          if (books && books.length > 0) books = this.sortBooks(books);
+          this.setState({ books }, () => this.setState({ loading: false }));
         });
       });
     } else {
@@ -25,19 +64,17 @@ class SearchBooksPage extends Component {
     }
   };
 
-  handleChange = query => {
-    this.setState({ query }, () => this.searchBooks(this.state.query));
-  };
-
   renderBooks = () => {
     const { books, query, loading } = this.state;
 
     if (loading) {
       return `Searching "${query}" ...`;
-    } else if (books && books.length > 0) {
-      return books.map(book => <Book key={book.id} book={book} />);
     } else if (query.length === 0) {
       return "Please, enter a search term.";
+    } else if (books && books.length > 0) {
+      return books.map(book => (
+        <Book key={book.id} book={book} onBookUpdate={this.getUserBooks} />
+      ));
     } else {
       return `No results for "${query}". Please try a different term.`;
     }

@@ -9,18 +9,6 @@ export default class Book extends Component {
     moved: false
   };
 
-  componentDidMount() {
-    let { book } = this.props;
-
-    if (!book.shelf) {
-      BooksAPI.get(book.id).then(userBook => {
-        this.setState({ shelf: userBook.shelf });
-      });
-    } else {
-      this.setState({ shelf: book.shelf });
-    }
-  }
-
   renderAuthors = book => {
     if (book.authors && book.authors.length > 0) {
       return (
@@ -37,16 +25,10 @@ export default class Book extends Component {
     const { onBookUpdate } = this.props;
 
     this.setState({ shelf }, () => {
-      BooksAPI.update(book, shelf).then(res => {
-        if (onBookUpdate) {
+      BooksAPI.update(book, shelf).then(books => {
+        this.setState({ moved: true }, () => {
           onBookUpdate();
-        } else {
-          this.setState({ moved: true }, () => {
-            setTimeout(() => {
-              this.setState({ moved: false });
-            }, 5000);
-          });
-        }
+        });
       });
     });
   };
@@ -99,7 +81,7 @@ export default class Book extends Component {
           )}
           <div className="book-shelf-changer">
             <select
-              value={this.state.shelf}
+              defaultValue={book.shelf || "none"}
               onChange={e => this.updateBookShelf(book, e.target.value)}
             >
               <option value="move" disabled>

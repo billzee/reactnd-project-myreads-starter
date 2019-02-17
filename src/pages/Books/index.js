@@ -15,20 +15,21 @@ const bookshelves = [
 
 class BooksPage extends Component {
   state = {
-    books: []
+    userBooks: []
   };
 
   componentDidMount() {
-    this.getAllBooks();
+    this.getUserBooks();
   }
 
-  getAllBooks = () => {
-    BooksAPI.getAll().then(books => {
-      this.setState({ books });
+  getUserBooks = () => {
+    BooksAPI.getAll().then(userBooks => {
+      this.setState({ userBooks });
     });
   };
 
   render() {
+    const { userBooks } = this.state;
     return (
       <div className="list-books">
         <PageTitle value="MyReads" />
@@ -36,14 +37,14 @@ class BooksPage extends Component {
           {bookshelves.map(bookshelf => {
             return (
               <Bookshelf key={bookshelf.id} title={bookshelf.title}>
-                {this.state.books
-                  .filter(book => book.shelf === bookshelf.id)
-                  .map(book => {
+                {userBooks
+                  .filter(userBook => userBook.shelf === bookshelf.id)
+                  .map(userBook => {
                     return (
                       <Book
-                        onBookUpdate={this.getAllBooks}
-                        key={book.id}
-                        book={book}
+                        onBookUpdate={this.getUserBooks}
+                        key={userBook.id}
+                        book={userBook}
                       />
                     );
                   })}
